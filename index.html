@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grades</title>
+    <style>
+      :root {
+        --bg: #eef0f5;
+        --card: #ffffff;
+        --ink: #151a2b;
+        --muted: #6a728a;
+        --border: #dde1ea;
+        --accent: #4b5bff;
+        --success: #12a67c;
+        --warning: #e0a21a;
+        --danger: #e0415f;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+
+      .hero {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .ring {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: conic-gradient(var(--accent) 0deg, var(--accent) var(--progress, 0deg), var(--border) var(--progress, 0deg), var(--border) 360deg);
+        display: grid;
+        place-items: center;
+        position: relative;
+      }
+
+      .ring::before {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        background: var(--card);
+        border-radius: 50%;
+      }
+
+      .ring strong {
+        position: relative;
+        z-index: 1;
+        font-size: 2rem;
+      }
+
+      .headline {
+        flex: 1;
+      }
+
+      .headline h1 {
+        margin: 0 0 6px;
+        font-size: 1.4rem;
+      }
+
+      .headline p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .bar {
+        margin-top: 14px;
+        display: flex;
+        gap: 4px;
+        height: 8px;
+      }
+
+      .bar span {
+        display: block;
+        flex: 1;
+        border-radius: 999px;
+        background: var(--border);
+      }
+
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 24px 4px 14px;
+      }
+
+      .toolbar h2 {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+
+      .sort-btn {
+        padding: 8px 12px;
+        border: 0;
+        border-radius: 10px;
+        background: #e8eaff;
+        color: var(--accent);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 16px;
+      }
+
+      .card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .subject-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        word-break: break-word;
+      }
+
+      .average {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+
+      .meta {
+        margin-top: 4px;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 34px;
+        margin: 12px 0;
+      }
+
+      .chip {
+        min-width: 34px;
+        height: 34px;
+        border: none;
+        border-radius: 11px;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .empty {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .add-row {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .add-btn,
+      .delete-btn,
+      .submit-btn {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f2f3f7;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .add-btn {
+        height: 42px;
+      }
+
+      .delete-btn {
+        margin-top: 12px;
+        padding: 8px 10px;
+      }
+
+      .subject-form {
+        margin-top: 20px;
+        display: flex;
+        gap: 8px;
+      }
+
+      .subject-form input {
+        flex: 1;
+        min-width: 0;
+        height: 48px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        padding: 0 14px;
+        font: inherit;
+      }
+
+      .submit-btn {
+        height: 48px;
+        padding: 0 18px;
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+
+      @media (max-width: 560px) {
+        .hero {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="ring" id="ring"><strong id="overall">–</strong></div>
+        <div class="headline">
+          <h1>Overall average</h1>
+          <p id="summary">Add your first grade to see your average.</p>
+          <div class="bar" id="bar" aria-label="Grade distribution"></div>
+        </div>
+      </section>
+
+      <div class="toolbar">
+        <h2>Subjects</h2>
+        <button class="sort-btn" id="sortBtn" type="button">Sort: added</button>
+      </div>
+
+      <div class="grid" id="grid"></div>
+
+      <form class="subject-form" id="subjectForm">
+        <input id="newSubject" type="text" maxlength="40" autocomplete="off" placeholder="New subject" aria-label="New subject" />
+        <button class="submit-btn" type="submit">Add subject</button>
+      </form>
+    </main>
+
+    <script>
+      const STORAGE_KEY = 'grades-v1';
+      const defaultSubjects = [
+        ['Informatika', [5]],
+        ['Tjelesni', [5]],
+        ['Daktilografija', [4]],
+        ['Politika i gospodarstvo', [3]],
+        ['Engleski', [3]],
+        ['Obiteljsko pravo', [2]],
+        ['Ured za vježbu', [2]],
+        ['Ustavni ustroj BiH', [2]]
+      ];
+
+      const uid = () => Math.random().toString(36).slice(2, 9);
+      const avg = (values) => (values && values.length ? values.reduce((sum, n) => sum + n, 0) / values.length : null);
+      const format = (value) => value == null ? '–' : value.toFixed(2);
+
+      const gradeColor = (grade) => {
+        if (grade <= 1) return 'var(--danger)';
+        if (grade === 2) return '#f07a45';
+        if (grade === 3) return 'var(--warning)';
+        if (grade === 4) return '#2f8fe6';
+        return 'var(--success)';
+      };
+
+      const readState = () => {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.subjects)) return parsed;
+        } catch (error) {
+          // Ignore invalid stored data.
+        }
+        return null;
+      };
+
+      let state = readState();
+      if (!state || !Array.isArray(state.subjects) || state.subjects.length === 0) {
+        state = {
+          subjects: defaultSubjects.map(([name, grades]) => ({ id: uid(), name, grades: [...grades] }))
+        };
+      }
+
+      let sortByAverage = false;
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (error) {
+          // Ignore write failures.
+        }
+      }
+
+      function renderAverage() {
+        const values = state.subjects.map((subject) => avg(subject.grades)).filter((value) => value != null);
+        const total = avg(values);
+        const ring = document.getElementById('ring');
+        const overall = document.getElementById('overall');
+        const summary = document.getElementById('summary');
+        const bar = document.getElementById('bar');
+
+        if (ring) {
+          const angle = Number.isFinite(total) ? Math.max(0, Math.min(360, ((total - 1) / 4) * 360)) : 0;
+          ring.style.setProperty('--progress', `${angle}deg`);
+          ring.style.background = total == null
+            ? 'conic-gradient(var(--border) 0deg, var(--border) 360deg)'
+            : `conic-gradient(var(--accent) 0deg, ${gradeColor(Math.round(total || 1))} ${angle}deg, var(--border) ${angle}deg, var(--border) 360deg)`;
+        }
+
+        if (overall) overall.textContent = total == null ? '–' : total.toFixed(1);
+
+        const subjectCount = state.subjects.length;
+        const gradedCount = values.length;
+        if (summary) {
+          summary.textContent = total == null
+            ? 'Add your first grade to see your average.'
+            : `Average of ${gradedCount} graded subject${gradedCount === 1 ? '' : 's'}, ${subjectCount - gradedCount} still empty.`;
+        }
+
+        if (bar) {
+          const counts = [1, 2, 3, 4, 5].map((grade) =>
+            state.subjects.reduce((count, subject) => count + subject.grades.filter((g) => g === grade).length, 0)
+          );
+          const max = Math.max(1, ...counts);
+          bar.innerHTML = counts.map((count, index) => {
+            const opacity = count ? 0.35 + (count / max) * 0.65 : 1;
+            const background = count ? gradeColor(index + 1) : 'transparent';
+            return `<span title="Grade ${index + 1}: ${count}" style="background:${background}; opacity:${opacity};"></span>`;
+          }).join('');
+        }
+      }
+
+      function renderGrid() {
+        const grid = document.getElementById('grid');
+        if (!grid) return;
+
+        const list = [...state.subjects];
+        if (sortByAverage) {
+          list.sort((a, b) => (avg(b.grades) ?? -1) - (avg(a.grades) ?? -1));
+        }
+
+        const sortButton = document.getElementById('sortBtn');
+        if (sortButton) {
+          sortButton.textContent = sortByAverage ? 'Sort: by average' : 'Sort: added';
+        }
+
+        grid.innerHTML = list.map((subject) => {
+          const value = avg(subject.grades);
+          return `
+            <article class="card" data-id="${subject.id}">
+              <div class="card-head">
+                <div class="subject-name">${subject.name}</div>
+                <div class="average" style="color:${value == null ? 'var(--muted)' : gradeColor(Math.min(5, Math.max(1, Math.round(value))))};">${format(value)}</div>
+              </div>
+              <div class="meta">${subject.grades.length ? `${subject.grades.length} grade${subject.grades.length === 1 ? '' : 's'}` : 'No grades yet'}</div>
+              <div class="chips">
+                ${subject.grades.length
+                  ? subject.grades.map((grade, index) => `
+                      <button class="chip" type="button" data-remove="${index}" aria-label="Remove grade ${grade}" style="background:${gradeColor(grade)}">${grade}</button>
+                    `).join('')
+                  : '<span class="empty">Tap a number below to add a grade.</span>'}
+              </div>
+              <div class="add-row">
+                ${[1, 2, 3, 4, 5].map((grade) => `
+                  <button class="add-btn" type="button" data-add="${grade}" aria-label="Add grade ${grade}">${grade}</button>
+                `).join('')}
+              </div>
+              <button class="delete-btn" type="button" data-delete="1">Delete subject</button>
+            </article>
+          `;
+        }).join('');
+      }
+
+      function render() {
+        renderAverage();
+        renderGrid();
+      }
+
+      document.getElementById('subjectForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const input = document.getElementById('newSubject');
+        const name = input.value.trim();
+        if (!name) return;
+        state.subjects.push({ id: uid(), name, grades: [] });
+        input.value = '';
+        saveState();
+        render();
+      });
+
+      document.getElementById('sortBtn').addEventListener('click', () => {
+        sortByAverage = !sortByAverage;
+        render();
+      });
+
+      document.getElementById('grid').addEventListener('click', (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        const card = event.target.closest('.card');
+        if (!card) return;
+
+        const subject = state.subjects.find((item) => item.id === card.dataset.id);
+        if (!subject) return;
+
+        if (button.dataset.add) {
+          subject.grades.push(Number(button.dataset.add));
+          saveState();
+          render();
+          return;
+        }
+
+        if (button.dataset.remove !== undefined) {
+          const index = Number(button.dataset.remove);
+          const grade = subject.grades[index];
+          if (grade == null) return;
+          subject.grades.splice(index, 1);
+          saveState();
+          render();
+          return;
+        }
+
+        if (button.dataset.delete) {
+          const index = state.subjects.findIndex((item) => item.id === subject.id);
+          if (index >= 0) {
+            state.subjects.splice(index, 1);
+            saveState();
+            render();
+          }
+        }
+      });
+
+      render();
+    </script>
+  </body>
+</html>
