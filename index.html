@@ -6,15 +6,17 @@
     <title>Grades</title>
     <style>
       :root {
-        --bg: #eef0f5;
-        --card: #ffffff;
-        --ink: #151a2b;
-        --muted: #6a728a;
-        --border: #dde1ea;
-        --accent: #4b5bff;
-        --success: #12a67c;
-        --warning: #e0a21a;
-        --danger: #e0415f;
+        color-scheme: dark;
+        --bg: #0e1118;
+        --card: #171b26;
+        --ink: #eceff8;
+        --muted: #8d96b0;
+        --border: #262c3b;
+        --accent: #8795ff;
+        --accent-soft: #232a4a;
+        --success: #3ddcae;
+        --warning: #f4c04f;
+        --danger: #ff6785;
       }
 
       * { box-sizing: border-box; }
@@ -110,7 +112,7 @@
         padding: 8px 12px;
         border: 0;
         border-radius: 10px;
-        background: #e8eaff;
+        background: var(--accent-soft);
         color: var(--accent);
         font-weight: 700;
         cursor: pointer;
@@ -188,7 +190,8 @@
       .submit-btn {
         border: 1px solid var(--border);
         border-radius: 12px;
-        background: #f2f3f7;
+        background: #1f2635;
+        color: var(--ink);
         cursor: pointer;
         font-weight: 700;
       }
@@ -215,6 +218,7 @@
         border-radius: 14px;
         border: 1px solid var(--border);
         background: var(--card);
+        color: var(--ink);
         padding: 0 14px;
         font: inherit;
       }
@@ -224,7 +228,7 @@
         padding: 0 18px;
         background: var(--accent);
         border-color: var(--accent);
-        color: white;
+        color: #0e1118;
       }
 
       @media (max-width: 560px) {
